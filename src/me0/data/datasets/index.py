@@ -16,10 +16,10 @@ class ME0IndexDataset(TensorDictListDataset):
     def __init__(
         self,
         file: str | Path | list[str] | list[Path],
-        pad: bool = False,
-        layer_first: bool = False,
         features: list[dict] | None = None,
         nfiles: int | None = None,
+        pad: bool = False,
+        layer_first: bool = False,
         **kwargs: Any,
     ):
         if layer_first:
@@ -60,7 +60,7 @@ class ME0IndexDataset(TensorDictListDataset):
     ) -> list[TensorDict]:
         indices_chunk = zip(*[input[key] for key in self.keys])
         indices_chunk = [torch.from_numpy(np.stack(each, axis=1)) for each in indices_chunk]
-        target_chunk = [torch.from_numpy(each).type(torch.float32) for each in input['label']]
+        target_chunk = [torch.from_numpy(each).type(torch.int32) for each in input['label']]
         input_chunk = [each/self.scale_factor for each in indices_chunk]
 
         if self.features:

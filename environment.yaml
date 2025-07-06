@@ -2,13 +2,12 @@ name: me0segreco-py311
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
-  - pytorch-gpu
-  - lightning
-  - torchmetrics
+  - python=3.11.11
+  - pytorch=2.6.0
+  - lightning=2.5.1
+  - torchmetrics=1.7.0
   - jsonargparse
-  - uproot
-  - h5py
+  - h5py=3.13.0
   - matplotlib
   - scienceplots
   - mplhep
@@ -16,9 +15,10 @@ dependencies:
   - mplhep
   - pandas
   - statsmodels
-  - pdfcombine
   - jupyterlab
-  - tensordict
   - typeshed-client
-  - scikit-learn
-  - omegaconf
+  - einops
+  - pip
+  - pip:
+    - tensordict==0.7.2
+

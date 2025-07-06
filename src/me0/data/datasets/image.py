@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import cast, Any
+from typing import cast, Any, Union
 import os
 import numpy as np
 import numpy.typing as npt
@@ -11,16 +11,15 @@ import tqdm
 from .base import pad_muon, get_total_entries
 from .base import TensorDictListDataset
 
-
 class ME0DigiImageDataset(TensorDictListDataset):
     def __init__(
         self,
         file: str | Path | list[str] | list[Path],
+        features: list[dict] | None = None,
         nfiles: int | None = None,
         pad: bool = False,
         layer_first: bool = False,
-        features: list[dict] | None = None,
-        get_central_bx: bool = False,
+        get_central_bx: bool = True,
         **kwargs: Any,
     ):
         if layer_first:
@@ -120,7 +119,7 @@ class ME0DigiImageDataset(TensorDictListDataset):
     ) -> list[TensorDict]:
         indices_chunk = zip(*[input[key] for key in self.keys])
         indices_chunk = [torch.from_numpy(np.stack(each, axis=0)) for each in indices_chunk]
-        target_chunk = [torch.from_numpy(each).type(torch.float32) for each in input['label']]
+        target_chunk = [torch.from_numpy(each).type(torch.int32) for each in input['label']]
 
         output = {'indices': indices_chunk, 'target': target_chunk}
         output |= {key: pad_muon(input[key]) for key in ['pt', 'eta', 'phi']}
@@ -148,7 +147,17 @@ class ME0DigiImageDataset(TensorDictListDataset):
         image = image.to_dense()
         return image
 
-    def __getitem__(self, index: int) -> TensorDict:
+    def __getitem__(self, index: int | slice) -> Union[TensorDict, 'ME0DigiImageDataset']:
+        if isinstance(index, slice):
+            return self.__class__.from_data(
+                    self.data[index],
+                    features=self.features,
+                    layer_first=self.layer_first,
+                    get_central_bx=self.get_central_bx,
+                    image_size=self.image_size,
+                    keys=self.keys,
+                    )
+                    
         example = self.data[index].clone()
 
         indices = example.pop('indices')
@@ -165,3 +174,16 @@ class ME0DigiImageDataset(TensorDictListDataset):
         if self.features:
             example['input'] = torch.stack([example['input']] + [self.to_image(indices=indices, values=example.pop(key)) for key in self.features.keys()])
         return example
+
+    @classmethod
+    def from_data(cls, data: list[TensorDict], features=None, **kwargs) -> 'ME0DigiImageDataset':
+        obj = cls.__new__(cls)
+        super(cls, obj).__init__(data)
+        obj.file = None
+        obj.nfiles = None
+        obj.features = features
+        obj.layer_first = kwargs.get('layer_first', False)
+        obj.get_central_bx = kwargs.get('get_central_bx', True)
+        obj.image_size = kwargs.get('image_size')
+        obj.keys = kwargs.get('keys')
+        return obj

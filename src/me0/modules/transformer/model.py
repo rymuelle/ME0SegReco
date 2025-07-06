@@ -14,7 +14,7 @@ class TransformerEncoder(nn.TransformerEncoder):
         num_heads: int,
         dim_feedforward: int,
         dropout: float = 0.0,
-        activation: str = 'relu',
+        activation: str = 'gelu',
         layer_norm_eps: float = 0.00001,
         norm_first: bool = False,
         bias: bool = True,

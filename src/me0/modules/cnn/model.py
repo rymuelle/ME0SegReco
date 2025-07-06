@@ -15,6 +15,7 @@ class ConvBn(nn.Module):
         kernel_size: Tuple[int, int, int] | Tuple[int, int],
         stride: int,
         padding: Union[str, int],
+        bias: bool,
     ) -> None:
         """
         Args:
@@ -29,7 +30,7 @@ class ConvBn(nn.Module):
             kernel_size=kernel_size,
             stride=stride,
             padding=padding,
-            bias=False
+            bias=bias,
         )
         self.bn = bn(out_channels)
 
@@ -63,11 +64,16 @@ class ResidualBlock(nn.Module):
         kwargs |= {'dim': dim}
         in_channels = kwargs['in_channels']
         out_channels = kwargs['out_channels']
+        bias = kwargs['bias']
         self.convbn1 = ConvBn(**kwargs)
         self.activation = getattr(nn, activation)() 
         kwargs['in_channels'] = out_channels
         self.convbn2 = ConvBn(**kwargs)
-        self.res = getattr(nn, f'Conv{dim}')(in_channels, out_channels, kernel_size=1, bias=False)
+        self.res = getattr(nn, f'Conv{dim}')(in_channels, 
+                                             out_channels, 
+                                             kernel_size=1, 
+                                             bias=bias,
+                                             )
 
     def forward(self, x: Tensor) -> Tensor:
         """
@@ -97,6 +103,7 @@ class ME0SegCNN3d(nn.Module):
         stride: int = 1,
         padding: Union[str, int] = "same",
         activation: str = "ReLU",
+        bias: bool = False,
     ) -> None:
         """
         Args:
@@ -116,6 +123,7 @@ class ME0SegCNN3d(nn.Module):
                 stride=stride,
                 padding=padding,
                 activation=activation,
+                bias=bias,
             )
             self.residual_block_list.append(block)
             in_channels = ch
@@ -127,6 +135,7 @@ class ME0SegCNN3d(nn.Module):
             stride=stride,
             padding=padding,
             activation=activation,
+            bias=bias,
         )
 
     def forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
