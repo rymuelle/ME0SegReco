@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ME0SegReco"
+version = "0.1.0"
+description = "ME0 segmentation and reconstruction tools"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+
+dependencies = [
+    # Core
+    "torch>=2.5,<2.7",
+    "lightning>=2.4,<2.6",
+    "torchmetrics>=1.6,<1.8",
+    "tensordict>=0.7,<0.8",
+
+    # PyTorch ecosystem
+    "torch-geometric>=2.5,<2.7",
+
+    # Data / IO
+    "h5py>=3.10,<3.14",
+    "pandas>=2.2,<2.4",
+    "jsonargparse>=4.30,<5.0",
+
+    # Plotting / HEP
+    "matplotlib>=3.9,<3.11",
+    "scienceplots>=2.0,<3.0",
+    "mplhep>=0.3,<0.5",
+    "hist>=2.7,<2.9",
+
+    # Stats / math
+    "statsmodels>=0.14,<0.15",
+    "einops>=0.7,<0.9",
+
+    # Utilities
+    "typeshed-client>=2.3,<3.0",
+    "pdfcombine>=1.1,<2.0",
+
+    # Dev / notebooks
+    "ipykernel>=6.29,<8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "black>=24.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
