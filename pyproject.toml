@@ -29,6 +29,7 @@ dependencies = [
     "scienceplots>=2.0,<3.0",
     "mplhep>=0.3,<0.5",
     "hist>=2.7,<2.9",
+    "mplhep",
 
     # Stats / math
     "statsmodels>=0.14,<0.15",
