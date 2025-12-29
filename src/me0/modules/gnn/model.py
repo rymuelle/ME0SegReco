@@ -3,9 +3,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import MessagePassing
 
+##
+# This code is a basic demo of some GNN concepts. 
+## 
 
 class Gate(nn.Module):
-    # Don't worry about this gate module, it's not currently being used. 
     def __init__(self,):
         super().__init__()
 
@@ -17,27 +19,27 @@ class EdgeMP(MessagePassing):
     # This class controls message passing.
     # One run of it represents one iteration of message passing
     def __init__(self, node_dim, edge_dim, hidden_dim):
-        # We can define the aggregation in the inhereted MessagePassing class.
+        # We can define the aggregation in the inherited MessagePassing class.
         # We could write our own aggregation function, or use a premade one like sum or mean
         # I use sum here, which aggregation would you choose and why? 
         super().__init__(aggr='sum')  
 
         # Messages passed will go through this network
+        input_edge_mlp = 2 * node_dim + edge_dim
         self.edge_mlp = nn.Sequential(
-            nn.Linear(2 * node_dim + edge_dim, hidden_dim ),
-            nn.LayerNorm(hidden_dim),
+            nn.LayerNorm(input_edge_mlp),
+            nn.Linear(input_edge_mlp,  hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.LayerNorm(hidden_dim),
             nn.GELU(),
         )
         # Nodes will pass the aggregated messages through this network to update their value
+        input_node_mlp = node_dim + hidden_dim
         self.node_mlp = nn.Sequential(
-            nn.Linear(node_dim + hidden_dim, hidden_dim),
-            nn.LayerNorm(hidden_dim),
+            nn.LayerNorm(input_node_mlp),
+            nn.Linear(input_node_mlp,  hidden_dim),
             nn.GELU(),
-            nn.Linear(hidden_dim, node_dim),
-            nn.LayerNorm(node_dim),
+            nn.Linear(hidden_dim, node_dim)
         )
 
     def forward(self, x, edge_index, edge_attr):
@@ -47,7 +49,7 @@ class EdgeMP(MessagePassing):
 
         # Propagate:
         # 1st, it will call message to compute and pass messages
-        # 2nd, it will call aggregate, and aggegate the messages for each node
+        # 2nd, it will call aggregate, and aggregate the messages for each node
         # 3rd, it will run update, and update the node values
         return self.propagate(edge_index, x=x, edge_attr=edge_attr)
 
@@ -68,14 +70,13 @@ class HitGNN(nn.Module):
     def __init__(self, input_node_dim=5, edge_dim=5, hidden_dim=64, num_layers=3):
         super().__init__()
 
-        # Initial broadcast from the inital input_node_dim to a larger hidden_dim
+        # Initial broadcast from the initial input_node_dim to a larger hidden_dim
         # Note that hidden_dim here becomes the node_dim in EdgeMP
+        # This network uses the more classic 
         self.input_mlp = nn.Sequential(
             nn.Linear(input_node_dim, hidden_dim),
-            nn.LayerNorm(hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.LayerNorm(hidden_dim),
         )
 
         # Create message passing blocks
@@ -85,7 +86,6 @@ class HitGNN(nn.Module):
         ])
 
         # Project the output to a single logit for binary classification
-        # Note, we do not pass the output through a sigmoid as our loss function will handle that
         self.output_mlp = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.GELU(),
@@ -103,6 +103,7 @@ class HitGNN(nn.Module):
             x = F.gelu(x)
 
         logits = self.output_mlp(x)
+        # Note, we do not pass the output through a sigmoid as our loss function (BCEWithLogitsLoss) expects logits
         return logits.squeeze(-1)
 
     def predict(self, data):
