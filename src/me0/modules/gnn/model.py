@@ -72,7 +72,6 @@ class HitGNN(nn.Module):
 
         # Initial broadcast from the initial input_node_dim to a larger hidden_dim
         # Note that hidden_dim here becomes the node_dim in EdgeMP
-        # This network uses the more classic 
         self.input_mlp = nn.Sequential(
             nn.Linear(input_node_dim, hidden_dim),
             nn.GELU(),
