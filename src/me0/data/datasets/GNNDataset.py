@@ -6,8 +6,9 @@ import torch
 
 
 class GNNDataset(InMemoryDataset):
-    def __init__(self, root, transform=None, pre_transform=None, pre_filter=None,
+    def __init__(self, root, path='../data/step4_0.h5', transform=None, pre_transform=None, pre_filter=None,
                  d_strip_max=20, d_ieta_max=2, d_bx_max=1):
+        self.path = path
         self.d_strip_max = d_strip_max
         self.d_ieta_max = d_ieta_max
         self.d_bx_max = d_bx_max
@@ -22,7 +23,7 @@ class GNNDataset(InMemoryDataset):
 
     def process(self):
         data_list = []        
-        with h5py.File('../data/step4_0.h5', 'r') as f:
+        with h5py.File(self.path, 'r') as f:
             chambers = f['chamber']
             for idx in range(len(chambers)):
                 grp = chambers[idx]
