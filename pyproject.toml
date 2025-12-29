@@ -11,36 +11,31 @@ requires-python = ">=3.11"
 
 dependencies = [
     # Core
-    "torch>=2.5,<2.7",
-    "lightning>=2.4,<2.6",
-    "torchmetrics>=1.6,<1.8",
-    "tensordict>=0.7,<0.8",
+    "torch",
 
     # PyTorch ecosystem
-    "torch-geometric>=2.5,<2.7",
+    "torch-geometric",
 
     # Data / IO
     "h5py>=3.10,<3.14",
-    "pandas>=2.2,<2.4",
-    "jsonargparse>=4.30,<5.0",
+    "pandas>=2.2",
 
     # Plotting / HEP
-    "matplotlib>=3.9,<3.11",
+    "matplotlib>=3.9",
     "scienceplots>=2.0,<3.0",
-    "mplhep>=0.3,<0.5",
-    "hist>=2.7,<2.9",
-    "mplhep",
+    "mplhep>=0.3",
+    "hist>=2.7",
 
     # Stats / math
-    "statsmodels>=0.14,<0.15",
-    "einops>=0.7,<0.9",
+    "statsmodels>=0.14",
+    "einops>=0.7",
 
     # Utilities
-    "typeshed-client>=2.3,<3.0",
-    "pdfcombine>=1.1,<2.0",
+    "typeshed-client>=2.3",
+    "pdfcombine>=1.1",
 
     # Dev / notebooks
-    "ipykernel>=6.29,<8.0",
+    "ipykernel>=6.29",
 ]
 
 [project.optional-dependencies]
