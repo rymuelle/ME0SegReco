@@ -5,6 +5,7 @@ from torch_geometric.nn import MessagePassing
 
 
 class Gate(nn.Module):
+    # Don't worry about this gate module, it's not currently being used. 
     def __init__(self,):
         super().__init__()
 
@@ -16,13 +17,14 @@ class EdgeMP(MessagePassing):
     # This class controls message passing.
     # One run of it represents one iteration of message passing
     def __init__(self, node_dim, edge_dim, hidden_dim):
-        super().__init__(aggr='add') # This defines the aggregation
+        # We can define the aggregation in the inhereted MessagePassing class.
+        # We could write our own aggregation function, or use a premade one like sum or mean
+        # I use sum here, which aggregation would you choose and why? 
+        super().__init__(aggr='sum')  
 
         # Messages passed will go through this network
-        # The layer norms are probably not needed
         self.edge_mlp = nn.Sequential(
-            nn.Linear(2 * node_dim + edge_dim, hidden_dim * 2),
-            Gate(),
+            nn.Linear(2 * node_dim + edge_dim, hidden_dim ),
             nn.LayerNorm(hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, hidden_dim),
