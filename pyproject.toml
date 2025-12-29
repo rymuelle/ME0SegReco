@@ -32,10 +32,7 @@ dependencies = [
 
     # Utilities
     "typeshed-client>=2.3",
-    "pdfcombine>=1.1",
-
-    # Dev / notebooks
-    "ipykernel>=6.29",
+    "pdfcombine>=1.1"
 ]
 
 [project.optional-dependencies]
