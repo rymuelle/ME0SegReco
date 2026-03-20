@@ -7,11 +7,12 @@ import torch
 
 class GNNDataset(InMemoryDataset):
     def __init__(self, root, path='../data/step4_0.h5', transform=None, pre_transform=None, pre_filter=None,
-                 d_strip_max=20, d_ieta_max=2, d_bx_max=1):
+                 d_strip_max=20, d_ieta_max=2, d_bx_max=1, flip_edge=True):
         self.path = path
         self.d_strip_max = d_strip_max
         self.d_ieta_max = d_ieta_max
         self.d_bx_max = d_bx_max
+        self.flip_edge = flip_edge
 
         super().__init__(root, transform, pre_transform, pre_filter)
         self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
@@ -61,8 +62,11 @@ class GNNDataset(InMemoryDataset):
                 
                 # By adding i,j and j,i, we can make the graph bi-directional
                 edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
-                edge_attr = torch.cat([edge_attr, edge_attr], dim=0)
-
+                if self.self.flip_edge:
+                    edge_attr = torch.cat([edge_attr, -edge_attr], dim=0)
+                else:
+                    edge_attr = torch.cat([edge_attr, edge_attr], dim=0)
+                    
                 data = Data(x=x, edge_index=edge_index, y=y, edge_attr=edge_attr)
                 data_list.append(data)
 
