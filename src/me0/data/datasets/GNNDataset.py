@@ -62,7 +62,7 @@ class GNNDataset(InMemoryDataset):
                 
                 # By adding i,j and j,i, we can make the graph bi-directional
                 edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
-                if self.self.flip_edge:
+                if self.flip_edge:
                     edge_attr = torch.cat([edge_attr, -edge_attr], dim=0)
                 else:
                     edge_attr = torch.cat([edge_attr, edge_attr], dim=0)
